@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Fortify静态代码扫描构建文件示例
+版本号:Version 1.0
+发布时间:2020年1月5日
+开发人员:信息安全及内控部 孙博（信息安全及内控部顾问组）
+使用方法:将build.xml和build-sca.properties一起放入源代码根路径下
+脚本用途:执行JAVA和JSP源代码静态扫描任务
+-->
+
+<project name="${project_name}" basedir="." default="clean_analyzer">
+    <!-- 获取属性文件变量 -->
+    <property file="build_sca_local_linux.properties"/>
+    <!-- 定义已审计结果报告文件 -->
+    <property name="sca_audited_file" value="${basedir}/fortify_reports/sca_audited_file.fpr"/>
+    <!-- 定义合并后且待上传报告文件 -->
+    <property name="sca_merged_file" value="${basedir}/fortify_reports/sca_merged_file.fpr"/>
+    <!-- 定义目标结果报告文件 -->
+    <property name="sca_result_file" value="${basedir}/fortify_reports/sca_result_file.fpr"/>
+    <!-- 定义translation阶段的日志文件 -->
+    <property name="sca_translation_log" value="${basedir}/fortify_reports/sca_translation.log"/>
+    <!-- 定义scan阶段的日志文件 -->
+    <property name="sca_scan_file" value="${basedir}/fortify_reports/sca_scan.log"/>
+
+    <!-- 定义审计阶段生成的pdf报告 >
+    <property name="sca_reprot_file" value="${basedir}/fortify_reports/report.html" /-->
+
+    <!-- 定义build_id，build-id用于在内存中定位缓存的分析结果 -->
+    <property name="build_id" value="${build_id}"/>
+
+    <!-- 新建扫描报告保存目录 -->
+    <target name="sca_init">
+        <!-- 在构建文件所在的当前路径下创建fortify_reports目录 -->
+        <mkdir dir="${basedir}/fortify_reports"/>
+    </target>
+
+    <!-- 创建build_id -->
+    <echo>Processing to analysis source code.</echo>
+    <!-- 如果创建失败则不进行扫描，JOB执行失败！ -->
+    <available file="fortify_reports" property="fortify_reports.exist"/>
+    <target name="createbuildid" if="fortify_reports.exist" depends="sca_init">
+        <echo>Create folder fortify_reports successfully!</echo>
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-b"/>
+            <arg value="${build_id}"/>
+            <arg value="-source"/>
+            <arg value="1.8"/>
+            <arg value="${basedir}/**/libs/*.jar"/>
+            <arg value="${basedir}/**/src/**/*.java"/>
+            <arg value="${basedir}/**/src/**/*.properties"/>
+            <arg value="${basedir}/**/src/**/*.xml"/>
+        </exec>
+    </target>
+
+    <target name="show-build-ids" depends="createbuildid">
+        <!-- 查看build_id是否创建成功 -->
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-show-build-ids"/>
+        </exec>
+        <!-- 尝试分析JAVA源代码 -->
+    </target>
+
+    <target name="sourceanalyzerjava" depends="show-build-ids">
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-b"/>
+            <arg value="${build_id}"/>
+            <arg value="-source"/>
+            <arg value="1.8"/>
+            <arg value="-classpath"/>
+            <!-- 定义用于翻译java源代码的jar包所在目录 -->
+            <arg value="${basedir}/**/*.jar"/>
+            <!-- 定义java源代码文件所在目录 -->
+            <arg value="${basedir}/**/src/**/*.java"/>
+            <!-- 定义properties文件所在目录 -->
+            <arg value="${basedir}/**/src/**/*.properties"/>
+            <!-- 定义XML文件所在目录 -->
+            <arg value="${basedir}/**/src/**/*.xml"/>
+            <!-- 定义不扫描的配置文件 -->
+            <arg value="-exclude"/>
+            <arg value="${basedir}/**/src/**/AESUtils.java"/>
+            <arg value="-exclude"/>
+            <arg value="${basedir}/**/test/**/*.*"/>
+            <!-- 配置translation阶段的日志文件 -->
+            <arg value="-debug"/>
+            <arg value="-verbose"/>
+            <arg value="-logfile"/>
+            <arg value="${sca_translation_log}"/>
+        </exec>
+        <echo>Processing Fortify analysis for java source code completed!</echo>
+    </target>
+
+    <target name="sourceanalyzerjs" depends="sourceanalyzerjava">
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-b"/>
+            <arg value="${build_id}"/>
+            <!-- 定义js源代码文件所在目录 -->
+            <arg value="${basedir}/**/src/**/*.js"/>
+            <arg value="-exclude"/>
+            <arg value="${basedir}/**/test/**/*.*"/>
+            <!-- 配置translation阶段的日志文件 -->
+            <arg value="-debug"/>
+            <arg value="-verbose"/>
+            <arg value="-logfile"/>
+            <arg value="${sca_translation_log}"/>
+        </exec>
+        <echo>Processing Fortify analysis for javascript source code completed!</echo>
+    </target>
+
+    <!-- 创建扫描结果文件 -->
+    <target name="create_result_file" depends="sourceanalyzerjava">
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-Xmx4096M"/>
+            <arg value="-b"/>
+            <arg value="${build_id}"/>
+            <arg value="-scan"/>
+            <arg value="-f"/>
+            <arg value="${sca_result_file}"/>
+            <!-- 配置translation阶段的日志文件-->
+            <arg value="-debug"/>
+            <arg value="-verbose"/>
+            <arg value="-logfile"/>
+            <arg value="${sca_scan_file}"/>
+        </exec>
+    </target>
+
+
+    <!-- 清除扫描缓存 -->
+    <target name="clean_analyzer" depends="create_result_file">
+        <exec executable="${FortifySCA}/sourceanalyzer">
+            <arg value="-clean"/>
+        </exec>
+        <echo>Clean analyzer completed!</echo>
+    </target>
+</project>
