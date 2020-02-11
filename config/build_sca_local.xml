@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-Fortify静态代码扫描构建文件示例
-版本号:Version 2.0
-发布时间:2016年7月13日
-开发人员:信息安全及内控部 孙博（信息安全及内控部顾问组）
-使用方法:将build.xml和build-sca.properties一起放入源代码根路径下
-脚本用途:执行JAVA和JSP源代码静态扫描任务
--->
 
 <project name="${project_name}" basedir="." default="clean_analyzer">
     <!-- 获取属性文件变量 -->
