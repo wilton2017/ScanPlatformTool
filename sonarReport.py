@@ -29,11 +29,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 currpath = os.path.dirname(os.path.realpath(__file__))
-sonarhost = 
+
+config = configparser.ConfigParser()
+config.read('{0}/../config/sscconfig.ini'.format(currpath), encoding='utf-8-sig')
+SONAR_HOST = config.get('SONAR','SONAR_HOST')
 
 class SonarStatisticsReport(object):
 
-    def __init__(self, host='http://10.21.97.104:9000', username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
+    def __init__(self, host=sonarhost, username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
         self.host = host
         self.username = username
         self.password = password
@@ -182,7 +185,7 @@ class SonarResponse(object):
             return json.dumps(self.data)
 
 
-def GenSonarReport(sonarip='http://10.21.12.199:9000',Metrickeys='bugs,vulnerabilities,code_smells,duplicated_lines_density,line_coverage,branch_coverage,complexity',distribute='all', workspacepath=None):
+def GenSonarReport(sonarip=SONAR_HOST,Metrickeys='bugs,vulnerabilities,code_smells,duplicated_lines_density,line_coverage,branch_coverage,complexity',distribute='all', workspacepath=None):
     sp = SonarStatisticsReport(host=sonarip)
     projectkeys = sp.get_projects_list(distribute)
 
@@ -242,4 +245,4 @@ if __name__ == '__main__':
     #
     #python3 sonarReport.py -d sz -r '/Users/heyingqin528/develop/imi-test-doc/fortifyReportTools' -u 'http://10.161.46.134:9000' -m bugs,vulnerabilities,code_smells,duplicated_lines_density,coverage,line_coverage,branch_coverage,complexity
     main(arg_parser())
-    #GenSonarReport(sonarip='http://10.21.97.104:9000',Metrickeys='bugs,vulnerabilities,code_smells,duplicated_lines_density,line_coverage,branch_coverage,complexity',distribute='ALL',workspacepath=None)
+    #GenSonarReport(sonarip=SONAR_HOST,Metrickeys='bugs,vulnerabilities,code_smells,duplicated_lines_density,line_coverage,branch_coverage,complexity',distribute='ALL',workspacepath=None)
