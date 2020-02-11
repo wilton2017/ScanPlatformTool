@@ -46,7 +46,7 @@ class OperateReport:
     def selectscanresult_by_distribute(self, distribute='ALL'):
         """
 
-        :param distribute: 输入部门标识 ALL 标示所有部门 sz 深圳智慧医疗 sh 上海医疗 ZHYY 智慧医院
+        :param distribute: 输入部门标识 ALL 标示所有部门 
         :return:
         """
 
@@ -109,7 +109,7 @@ class OperateReport:
     def getReportStatics_by_distribute(self, distribute='ALL'):
         """
 
-        :param distribute: 输入部门标识 ALL 标示所有部门 sz 深圳智慧医疗 sh 上海医疗 ZHYY 智慧医院
+        :param distribute: 输入部门标识 ALL 标示所有部门
         :return:
         """
         statics_dict = dict()
