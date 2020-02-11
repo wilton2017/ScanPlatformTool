@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 -------------------------------------------------
-   File Name：     ReoirtWriter
+   File Name：     sonarReport
    Description :
    Author :       admin
    date：          2020/1/5
@@ -29,10 +29,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 currpath = os.path.dirname(os.path.realpath(__file__))
+sonarhost = 
 
 class SonarStatisticsReport(object):
 
-    def __init__(self, host='http://10.21.12.199:9000', username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
+    def __init__(self, host='http://10.21.97.104:9000', username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
         self.host = host
         self.username = username
         self.password = password
