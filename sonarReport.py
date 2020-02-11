@@ -36,7 +36,7 @@ SONAR_HOST = config.get('SONAR','SONAR_HOST')
 
 class SonarStatisticsReport(object):
 
-    def __init__(self, host=sonarhost, username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
+    def __init__(self, host=SONAR_HOST, username=None, password=None, token=None, verify_ssl=True, timeout=60, user_agent=None):
         self.host = host
         self.username = username
         self.password = password
