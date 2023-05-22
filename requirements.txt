@@ -2,5 +2,5 @@ PyMySQL==0.9.3
 python-gitlab==1.4.0
 python-jenkins==1.6.0
 python-telegram-bot==12.3.0
-requests==2.22.0
+requests==2.31.0
 XlsxWriter==1.2.1
